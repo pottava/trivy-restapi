@@ -10,5 +10,7 @@ services:
       - 9000:9000
     volumes:
       - .:/go/src/github.com/pottava/trivy-restapi/app
+      - ${HOME}/Library/Caches:/root/.cache/ 
+      - /var/run/docker.sock:/var/run/docker.sock
     working_dir: /go/src/github.com/pottava/trivy-restapi/app
     container_name: api

@@ -28,13 +28,15 @@ paths:
         - name: severity
           in: query
           description: severities of vulnerabilities to be displayed
-          type: string
-          enum:
-            - UNKNOWN
-            - LOW
-            - MEDIUM
-            - HIGH
-            - CRITICAL
+          type: array
+          items:
+            type: string
+            enum:
+              - UNKNOWN
+              - LOW
+              - MEDIUM
+              - HIGH
+              - CRITICAL
         - name: ignore-unfixed
           in: query
           description: display only fixed vulnerabilities (default no)
