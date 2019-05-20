@@ -1,18 +1,28 @@
 # REST APIs for [Trivy](https://github.com/knqyf263/trivy)
 
+[![CircleCI](https://circleci.com/gh/pottava/trivy-restapi.svg?style=svg)](https://circleci.com/gh/pottava/trivy-restapi)
+
+[![pottava/trivy](http://dockeri.co/image/pottava/trivy)](https://hub.docker.com/r/pottava/trivy/)
+
+Supported tags and respective `Dockerfile` links:  
+・latest ([versions/0.x/Dockerfile](https://github.com/pottava/trivy-restapi/blob/master/versions/0.x/Dockerfile))  
+・0.0.16 ([versions/0.x/Dockerfile](https://github.com/pottava/trivy-restapi/blob/master/versions/0.x/Dockerfile))  
+
 ## Usage
 
 ### Run API server
 
 ```console
-docker run --name trivy -d --rm -p 9000:9000 pottava/trivy:0.0.16
+docker run --name trivy -d --rm -p 9000:9000 \
+    -v "${HOME}/Library/Caches":/root/.cache/ \
+    pottava/trivy:0.0.16
 ```
 
 ### Consume APIs
 
-get repositories
+get repositories ([API spec](https://raw.githubusercontent.com/pottava/trivy-restapi/master/spec.yaml))
 
 ```console
-curl -si -X GET -H 'Content-Type:application/json' \
-  http://localhost:9000/api/v1/images/python:3.4.10-alpine3.9/vulnerabilities
+curl -s -X GET -H 'Content-Type:application/json' \
+  "http://localhost:9000/api/v1/images/python:3.4.10-alpine3.9/vulnerabilities"
 ```
