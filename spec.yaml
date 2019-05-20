@@ -1,0 +1,95 @@
+swagger: '2.0'
+info:
+  title: trivy-restapi
+  version: 1.0.0
+  description: |
+    REST APIs for Trivy
+consumes:
+  - application/json
+produces:
+  - application/json
+schemes:
+  - http
+host: 'localhost:9000'
+basePath: /api/v1
+paths:
+  /images/{id}/vulnerabilities:
+    get:
+      description: get vulnerabilities of the specified image
+      operationId: getImageVulnerabilities
+      tags:
+        - image
+      parameters:
+        - name: id
+          in: path
+          description: Docker image name
+          type: string
+          required: true
+        - name: severity
+          in: query
+          description: severities of vulnerabilities to be displayed
+          type: string
+          enum:
+            - UNKNOWN
+            - LOW
+            - MEDIUM
+            - HIGH
+            - CRITICAL
+        - name: ignore-unfixed
+          in: query
+          description: display only fixed vulnerabilities (default no)
+          type: string
+          enum:
+            - "yes"
+            - "no"
+        - name: skip-update
+          in: query
+          description: skip db update (default no)
+          type: string
+          enum:
+            - "yes"
+            - "no"
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Vulnerability'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+definitions:
+  Vulnerability:
+    description: scanned result
+    required:
+      - VulnerabilityID
+    properties:
+      VulnerabilityID:
+        type: string
+      Title:
+        type: string
+      Description:
+        type: string
+      Severity:
+        type: string
+      PkgName:
+        type: string
+      InstalledVersion:
+        type: string
+      FixedVersion:
+        type: string
+      References:
+        type: array
+        items:
+          type: string
+  Error:
+    required:
+      - code
+      - message
+    properties:
+      code:
+        type: string
+      message:
+        type: string

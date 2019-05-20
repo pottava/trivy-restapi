@@ -1,0 +1,43 @@
+version: "2.1"
+
+services:
+  # docker-compose -f app/tools.yml run --rm codegen
+  codegen:
+    image: supinf/go-swagger:0.17.2
+    command: generate server -f spec.yaml -t app/generated
+    volumes:
+      - ..:/go/src/github.com/pottava/trivy-restapi
+    working_dir: /go/src/github.com/pottava/trivy-restapi
+
+  # docker-compose -f app/tools.yml run --rm deps init -no-examples -skip-tools
+  # docker-compose -f app/tools.yml run --rm deps ensure
+  deps:
+    image: supinf/go-dep:0.5
+    volumes:
+      - .:/go/src/github.com/pottava/trivy-restapi/app
+    working_dir: /go/src/github.com/pottava/trivy-restapi/app
+
+  # docker-compose -f app/tools.yml run --rm lint
+  lint:
+    image: supinf/golangci-lint:1.16
+    command: run --config .golangci.yml
+    volumes:
+      - .:/go/src/github.com/pottava/trivy-restapi/app
+    working_dir: /go/src/github.com/pottava/trivy-restapi/app
+
+  # docker-compose -f app/tools.yml run --rm test
+  test:
+    image: trivy-restapi/go:20190521
+    build: .
+    command: sh -c "go test -cover -bench -benchmem `go list ./... | grep -v /generated/` -v"
+    volumes:
+      - .:/go/src/github.com/pottava/trivy-restapi/app
+    working_dir: /go/src/github.com/pottava/trivy-restapi/app
+
+  # docker-compose -f app/tools.yml run --rm build
+  build:
+    image: supinf/go-gox:1.11
+    command: --osarch "linux/amd64 darwin/amd64 windows/amd64" -ldflags "-s -w" -output "/go/src/github.com/pottava/trivy-restapi/dist/{{.OS}}_{{.Arch}}"
+    volumes:
+      - ..:/go/src/github.com/pottava/trivy-restapi
+    working_dir: /go/src/github.com/pottava/trivy-restapi/app/generated/cmd/trivy-restapi-server

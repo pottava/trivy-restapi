@@ -1,0 +1,6 @@
+app/generated/cmd
+app/generated/models
+app/generated/restapi/*
+!app/generated/restapi/configure_trivy_restapi.go
+app/vendor
+dist
