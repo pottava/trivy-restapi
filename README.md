@@ -24,7 +24,8 @@ get repositories ([API spec](https://raw.githubusercontent.com/pottava/trivy-res
 
 ```bash
 $ curl -s -X GET -H 'Content-Type:application/json' \
-  "http://localhost:9000/api/v1/images/python:3.4.10-alpine3.9/vulnerabilities"
+  "http://localhost:9000/api/v1/images/python%3A3.4.10-alpine3.9/vulnerabilities" \
+  | jq .
 {
   "Count": 1,
   "Vulnerabilities": [
@@ -43,4 +44,8 @@ $ curl -s -X GET -H 'Content-Type:application/json' \
     }
   ]
 }
+$ curl -s -X GET -H 'Content-Type:application/json' \
+  "http://localhost:9000/api/v1/images/envoyproxy%2Fenvoy-alpine%3Av1.10.0/vulnerabilities" \
+  | jq -r ".Count"
+1
 ```
