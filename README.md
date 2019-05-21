@@ -12,8 +12,8 @@ Supported tags and respective `Dockerfile` links:
 
 ### Run API server
 
-```console
-docker run --name trivy -d --rm -p 9000:9000 \
+```bash
+$ docker run --name trivy -d --rm -p 9000:9000 \
     -v "${HOME}/Library/Caches":/root/.cache/ \
     pottava/trivy:0.0.16
 ```
@@ -22,7 +22,25 @@ docker run --name trivy -d --rm -p 9000:9000 \
 
 get repositories ([API spec](https://raw.githubusercontent.com/pottava/trivy-restapi/master/spec.yaml))
 
-```console
-curl -s -X GET -H 'Content-Type:application/json' \
+```bash
+$ curl -s -X GET -H 'Content-Type:application/json' \
   "http://localhost:9000/api/v1/images/python:3.4.10-alpine3.9/vulnerabilities"
+{
+  "Count": 1,
+  "Vulnerabilities": [
+    {
+      "Description": "ChaCha20-Poly1305 is ...",
+      "FixedVersion": "1.1.1b-r1",
+      "InstalledVersion": "1.1.1a-r1",
+      "PkgName": "openssl",
+      "References": [
+        "https://www.openssl.org/news/secadv/20190306.txt",
+        "..."
+      ],
+      "Severity": "MEDIUM",
+      "Title": "openssl: ChaCha20-Poly1305 with long nonces",
+      "VulnerabilityID": "CVE-2019-1543"
+    }
+  ]
+}
 ```

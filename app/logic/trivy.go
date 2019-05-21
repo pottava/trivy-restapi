@@ -6,10 +6,11 @@ import (
 	"fmt"
 	"os/exec"
 
+	"github.com/go-openapi/swag"
 	"github.com/pottava/trivy-restapi/app/generated/models"
 )
 
-func Scan(id, severities string, ignoreUnfixed, skipUpdate bool) ([]*models.Vulnerability, error) {
+func Scan(id, severities string, ignoreUnfixed, skipUpdate bool) (*models.Vulnerabilities, error) {
 	options := ""
 	if ignoreUnfixed {
 		options += " --ignore-unfixed"
@@ -34,9 +35,13 @@ func Scan(id, severities string, ignoreUnfixed, skipUpdate bool) ([]*models.Vuln
 	if err != nil {
 		return nil, err
 	}
-	result := []*models.Vulnerability{}
+	result := &models.Vulnerabilities{
+		Vulnerabilities: []*models.Vulnerability{},
+		Count:           swag.Int64(0),
+	}
 	for key := range vulnerabilities {
-		result = append(result, vulnerabilities[key]...)
+		result.Vulnerabilities = append(result.Vulnerabilities, vulnerabilities[key]...)
+		result.Count = swag.Int64(swag.Int64Value(result.Count) + int64(len(vulnerabilities[key])))
 	}
 	return result, nil
 }

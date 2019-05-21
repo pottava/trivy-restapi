@@ -55,16 +55,29 @@ paths:
         '200':
           description: OK
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/Vulnerability'
+            $ref: '#/definitions/Vulnerabilities'
         default:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Error'
 definitions:
-  Vulnerability:
+  Vulnerabilities:
     description: scanned result
+    required:
+      - Vulnerabilities
+      - Count
+    properties:
+      Vulnerabilities:
+        description: vulnerabilities of the specified image
+        type: array
+        items:
+          $ref: "#/definitions/Vulnerability"
+      Count:
+        description: Number of the vulnerabilities
+        type: integer
+        format: int64
+
+  Vulnerability:
     required:
       - VulnerabilityID
     properties:
@@ -86,6 +99,7 @@ definitions:
         type: array
         items:
           type: string
+
   Error:
     required:
       - code
