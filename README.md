@@ -10,7 +10,7 @@ Supported tags and respective `Dockerfile` links:
 
 ## Usage
 
-### Run API server
+### Run the API server
 
 ```bash
 $ docker run --name trivy -d --rm -p 9000:9000 \

@@ -34,6 +34,7 @@ jobs:
             wget -q https://github.com/go-swagger/go-swagger/releases/download/v0.17.2/swagger_linux_amd64
             chmod +x swagger_linux_amd64
             ./swagger_linux_amd64 generate server -f spec.yaml -t app/generated
+            cd app/
             go get -u github.com/golang/dep/...
             dep ensure
             go get github.com/mitchellh/gox
@@ -60,4 +61,4 @@ workflows:
             branches:
               ignore: /.*/
             tags:
-              only: /[1-9]+(\.[0-9]+)*/
+              only: /[0-9]+(\.[0-9]+)*/
