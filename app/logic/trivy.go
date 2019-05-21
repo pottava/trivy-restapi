@@ -2,6 +2,7 @@
 package logic
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"os/exec"
@@ -10,7 +11,7 @@ import (
 	"github.com/pottava/trivy-restapi/app/generated/models"
 )
 
-func Scan(id, severities string, ignoreUnfixed, skipUpdate bool) (*models.Vulnerabilities, error) {
+func Scan(ctx context.Context, id, severities string, ignoreUnfixed, skipUpdate bool) (*models.Vulnerabilities, error) {
 	options := ""
 	if ignoreUnfixed {
 		options += " --ignore-unfixed"
@@ -26,7 +27,7 @@ func Scan(id, severities string, ignoreUnfixed, skipUpdate bool) (*models.Vulner
 		id,
 		"$( date '+%Y-%m-%dT' )",
 	)
-	out, err := exec.Command("sh", "-c", commands).Output()
+	out, err := exec.CommandContext(ctx, "sh", "-c", commands).Output()
 	if err != nil {
 		return nil, err
 	}
