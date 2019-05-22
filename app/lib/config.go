@@ -16,8 +16,10 @@ var (
 
 // Config can be set via environment variables
 type config struct {
+	CacheDir  string `envconfig:"CACHE_DIRECTORY" default:"/root/.cache"`
 	Version   string `envconfig:"VERSION" default:"dev"`
 	AccessLog bool   `envconfig:"ACCESS_LOG" default:"true"`
+	Debug     bool   `envconfig:"APP_DEBUG" default:"false"`
 }
 
 // Config represents its configurations
@@ -30,4 +32,5 @@ func init() {
 		cfg.Version = fmt.Sprintf("%s-%s (built at %s)", version, commit, date)
 	}
 	Config = cfg
+	initLogger()
 }

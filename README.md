@@ -14,7 +14,7 @@ Supported tags and respective `Dockerfile` links:
 
 ```bash
 $ docker run --name trivy -d --rm -p 9000:9000 \
-    -v "${HOME}/Library/Caches":/root/.cache/ \
+    -v "${HOME}/Library/Caches":/root/.cache \
     pottava/trivy:0.0.16
 ```
 

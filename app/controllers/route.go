@@ -3,7 +3,6 @@ package controllers
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
 
@@ -15,12 +14,23 @@ import (
 	"github.com/pottava/trivy-restapi/app/logic"
 )
 
+func init() {
+	go logic.MakeVulnerabilityDatabase()
+}
+
 // Routes set API handlers
 func Routes(api *operations.TrivyRestapiAPI) {
 	api.ImageGetImageVulnerabilitiesHandler = image.GetImageVulnerabilitiesHandlerFunc(getVulnerabilities)
 }
 
 func getVulnerabilities(params image.GetImageVulnerabilitiesParams) middleware.Responder {
+	if !logic.IsReady {
+		code := http.StatusServiceUnavailable
+		return image.NewGetImageVulnerabilitiesDefault(code).WithPayload(&models.Error{
+			Code:    swag.String(fmt.Sprintf("%d", code)),
+			Message: swag.String("Vulnerability database is not ready yet"),
+		})
+	}
 	severities := "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL"
 	if len(params.Severity) > 0 {
 		severities = strings.Join(params.Severity, ",")
@@ -33,20 +43,8 @@ func getVulnerabilities(params image.GetImageVulnerabilitiesParams) middleware.R
 	if strings.EqualFold(swag.StringValue(params.SkipUpdate), "yes") {
 		skipUpdate = true
 	}
-	payload, err := logic.Scan(
+	payload, _ := logic.Scan(
 		params.HTTPRequest.Context(), params.ID, severities, ignoreUnfixed, skipUpdate,
 	)
-	if err != nil {
-		log.Print(err)
-		code := http.StatusBadRequest
-		return image.NewGetImageVulnerabilitiesDefault(code).WithPayload(newerror(code))
-	}
 	return image.NewGetImageVulnerabilitiesOK().WithPayload(payload)
-}
-
-func newerror(code int) *models.Error {
-	return &models.Error{
-		Code:    swag.String(fmt.Sprintf("%d", code)),
-		Message: swag.String(http.StatusText(code)),
-	}
 }

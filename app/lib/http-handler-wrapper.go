@@ -2,7 +2,6 @@ package lib
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 )
@@ -21,7 +20,7 @@ func Wrap(handler http.Handler) http.Handler {
 			proc := time.Now()
 			handler.ServeHTTP(w, r)
 			if Config.AccessLog {
-				log.Printf("[%s] %.3f %s %s", r.RemoteAddr, time.Since(proc).Seconds(), r.Method, r.URL)
+				Logger.Infof("[%s] %.3f %s %s", r.RemoteAddr, time.Since(proc).Seconds(), r.Method, r.URL)
 			}
 		}
 	})

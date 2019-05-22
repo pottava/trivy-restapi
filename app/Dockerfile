@@ -1,6 +1,6 @@
 FROM golang:1.12.5-alpine3.9
 
-RUN apk --no-cache add ca-certificates jq
+RUN apk --no-cache add ca-certificates jq git
 ENV TRIVY_VERSION=0.0.16 \
     TRIVY_CHECKSUM=3cb022d850256e477c8d131527900e8d74d251a258852872ffa6949a38f126dc
 WORKDIR /tmp

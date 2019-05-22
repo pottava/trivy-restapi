@@ -33,7 +33,10 @@ RUN tar xvf "trivy_${TRIVY_VERSION}_Linux-ARM64.tar.gz"
 RUN mv trivy /
 
 FROM alpine:3.9
-RUN apk --no-cache add ca-certificates jq
+RUN apk --no-cache add ca-certificates jq git \
+    && rm -rf /lib/apk/db
+ENV CACHE_DIRECTORY=/root/.cache \
+	ACCESS_LOG=true
 COPY --from=trivy-bin /trivy /usr/bin/
 COPY --from=build-app /trivy-restapi /
 ENTRYPOINT ["/trivy-restapi", "--host", "0.0.0.0", "--port", "9000"]
