@@ -59,7 +59,7 @@ func Scan(ctx context.Context, id, severities string, ignoreUnfixed, skipUpdate 
 		options += "--auto-refresh "
 	}
 	commands := fmt.Sprintf(
-		"trivy --format=json --severity=%s %s --clear-cache --cache-dir %s --quiet %s | grep -v \"%s\"",
+		"trivy --format=json --severity=%s %s --clear-cache --cache-dir=%s --quiet %s | grep -v \"%s\"",
 		severities,
 		options,
 		lib.Config.CacheDir,

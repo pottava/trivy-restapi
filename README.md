@@ -7,6 +7,7 @@
 Supported tags and respective `Dockerfile` links:  
 ・latest ([versions/0.1/Dockerfile](https://github.com/pottava/trivy-restapi/blob/master/versions/0.1/Dockerfile))  
 ・0.1 ([versions/0.1/Dockerfile](https://github.com/pottava/trivy-restapi/blob/master/versions/0.1/Dockerfile))  
+・0.1-db ([versions/0.1-db/Dockerfile](https://github.com/pottava/trivy-restapi/blob/master/versions/0.1-db/Dockerfile))  
 
 ## Usage
 
@@ -18,7 +19,13 @@ $ docker run --name trivy -d --rm -p 9000:9000 \
     pottava/trivy:0.1
 ```
 
-Then wait about 30 minutes for building the vulnerability database.
+Then wait about 30 minutes for building the vulnerability database.  
+Or
+
+```bash
+$ docker run --name trivy -d --rm -p 9000:9000 \
+    pottava/trivy:0.1-db
+```
 
 ### Consume APIs
 
