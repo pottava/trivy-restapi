@@ -7,6 +7,7 @@
 Supported tags and respective `Dockerfile` links:  
 ・latest ([versions/0.x/Dockerfile](https://github.com/pottava/trivy-restapi/blob/master/versions/0.x/Dockerfile))  
 ・0.0.16 ([versions/0.x/Dockerfile](https://github.com/pottava/trivy-restapi/blob/master/versions/0.x/Dockerfile))  
+・0.0.16-db ([versions/0.x-db/Dockerfile](https://github.com/pottava/trivy-restapi/blob/master/versions/0.x-db/Dockerfile))  
 
 ## Usage
 
@@ -16,6 +17,13 @@ Supported tags and respective `Dockerfile` links:
 $ docker run --name trivy -d --rm -p 9000:9000 \
     -v "${HOME}/Library/Caches":/root/.cache \
     pottava/trivy:0.0.16
+```
+
+or
+
+```bash
+$ docker run --name trivy -d --rm -p 9000:9000 \
+    pottava/trivy:0.0.16-db
 ```
 
 ### Consume APIs
@@ -45,7 +53,7 @@ $ curl -s -X GET -H 'Content-Type:application/json' \
   ]
 }
 $ curl -s -X GET -H 'Content-Type:application/json' \
-  "http://localhost:9000/api/v1/images/envoyproxy%2Fenvoy-alpine%3Av1.10.0/vulnerabilities" \
+  "http://localhost:9000/api/v1/images/envoyproxy%2Fenvoy-alpine%3Av1.10.0/vulnerabilities?skip-update=yes" \
   | jq -r ".Count"
 1
 ```

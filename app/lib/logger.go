@@ -37,7 +37,7 @@ func initLogger() {
 	}
 	logger, err := config.Build()
 	if err != nil {
-		panic(fmt.Sprintf("failed to build zap config: %w", err))
+		panic(fmt.Sprintf("failed to build zap config: %s", err.Error()))
 	}
 	Logger = logger.Sugar()
 }
