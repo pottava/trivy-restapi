@@ -5,8 +5,8 @@
 [![pottava/trivy](http://dockeri.co/image/pottava/trivy)](https://hub.docker.com/r/pottava/trivy/)
 
 Supported tags and respective `Dockerfile` links:  
-・latest ([versions/0.x/Dockerfile](https://github.com/pottava/trivy-restapi/blob/master/versions/0.x/Dockerfile))  
-・0.0.16 ([versions/0.x/Dockerfile](https://github.com/pottava/trivy-restapi/blob/master/versions/0.x/Dockerfile))  
+・latest ([versions/0.1/Dockerfile](https://github.com/pottava/trivy-restapi/blob/master/versions/0.1/Dockerfile))  
+・0.1 ([versions/0.1/Dockerfile](https://github.com/pottava/trivy-restapi/blob/master/versions/0.1/Dockerfile))  
 
 ## Usage
 
@@ -14,8 +14,8 @@ Supported tags and respective `Dockerfile` links:
 
 ```bash
 $ docker run --name trivy -d --rm -p 9000:9000 \
-    -v "${HOME}/Library/Caches":/root/.cache \
-    pottava/trivy:0.0.16
+    -v "${HOME}/Library/Caches/trivy":/root/.cache/trivy \
+    pottava/trivy:0.1
 ```
 
 Then wait about 30 minutes for building the vulnerability database.

@@ -3,7 +3,7 @@ version: "2.1"
 services:
   # docker-compose -f app/runtime.yml up
   api:
-    image: trivy-restapi/go:20190522
+    image: trivy-restapi/go:20190523
     build: .
     command: go run generated/cmd/trivy-restapi-server/main.go --host 0.0.0.0 --port 9000
     environment:
@@ -12,7 +12,7 @@ services:
       - 9000:9000
     volumes:
       - .:/go/src/github.com/pottava/trivy-restapi/app
-      - ${HOME}/Library/Caches/trivy:/root/.cache/trivy
+      - ../cache:/root/.cache/trivy
       - /var/run/docker.sock:/var/run/docker.sock
     working_dir: /go/src/github.com/pottava/trivy-restapi/app
     container_name: api

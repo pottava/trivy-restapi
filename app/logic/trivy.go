@@ -19,7 +19,7 @@ var IsReady bool
 
 func MakeVulnerabilityDatabase() {
 	cmd := exec.Command("sh", "-c", fmt.Sprintf(
-		"trivy --debug --cache-dir %s alpine:3.9",
+		"trivy --debug --auto-refresh --clear-cache --cache-dir %s alpine:3.9",
 		lib.Config.CacheDir,
 	))
 	stdout, _ := cmd.StdoutPipe()
@@ -43,36 +43,46 @@ func MakeVulnerabilityDatabase() {
 	lib.Logger.Info("Vulnerability database has been built")
 }
 
+type trivyResult struct {
+	Target          string                  `json:"Target"`
+	Vulnerabilities []*models.Vulnerability `json:"Vulnerabilities"`
+}
+
 func Scan(ctx context.Context, id, severities string, ignoreUnfixed, skipUpdate bool) (*models.Vulnerabilities, error) {
 	options := ""
 	if ignoreUnfixed {
-		options += " --ignore-unfixed"
+		options += "--ignore-unfixed "
 	}
 	if skipUpdate {
-		options += " --skip-update"
+		options += "--skip-update "
+	} else {
+		options += "--auto-refresh "
 	}
 	commands := fmt.Sprintf(
-		"set -o pipefail && trivy --format=json --severity=%s %s "+
-			"--cache-dir %s --exit-code 1 --quiet "+
-			"%s | grep -v \"%s\" | jq",
+		"trivy --format=json --severity=%s %s --clear-cache --cache-dir %s --quiet %s | grep -v \"%s\"",
 		severities,
 		options,
 		lib.Config.CacheDir,
 		id,
-		"$( date '+%Y-%m-%dT' )",
+		"$( date '+%Y-%m' )",
 	)
+	out, err := exec.CommandContext(ctx, "sh", "-c", commands).Output()
+	if err != nil {
+		return nil, err
+	}
+	records := []trivyResult{}
+	if err = json.Unmarshal(out, &records); err != nil {
+		lib.Logger.Warn(commands)
+		lib.Logger.Warn(string(out))
+		return nil, err
+	}
 	result := &models.Vulnerabilities{
 		Vulnerabilities: []*models.Vulnerability{},
 		Count:           swag.Int64(0),
 	}
-	out, err := exec.CommandContext(ctx, "sh", "-c", commands).Output()
-
-	vulnerabilities := map[string][]*models.Vulnerability{}
-	if e := json.Unmarshal(out, &vulnerabilities); e == nil {
-		for key := range vulnerabilities {
-			result.Vulnerabilities = append(result.Vulnerabilities, vulnerabilities[key]...)
-			result.Count = swag.Int64(swag.Int64Value(result.Count) + int64(len(vulnerabilities[key])))
-		}
+	for _, record := range records {
+		result.Vulnerabilities = append(result.Vulnerabilities, record.Vulnerabilities...)
+		result.Count = swag.Int64(swag.Int64Value(result.Count) + int64(len(record.Vulnerabilities)))
 	}
-	return result, err
+	return result, nil
 }

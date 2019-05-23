@@ -43,8 +43,15 @@ func getVulnerabilities(params image.GetImageVulnerabilitiesParams) middleware.R
 	if strings.EqualFold(swag.StringValue(params.SkipUpdate), "yes") {
 		skipUpdate = true
 	}
-	payload, _ := logic.Scan(
+	payload, err := logic.Scan(
 		params.HTTPRequest.Context(), params.ID, severities, ignoreUnfixed, skipUpdate,
 	)
+	if err != nil {
+		code := http.StatusNotAcceptable
+		return image.NewGetImageVulnerabilitiesDefault(code).WithPayload(&models.Error{
+			Code:    swag.String(fmt.Sprintf("%d", code)),
+			Message: swag.String(err.Error()),
+		})
+	}
 	return image.NewGetImageVulnerabilitiesOK().WithPayload(payload)
 }
