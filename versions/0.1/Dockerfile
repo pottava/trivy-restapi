@@ -24,16 +24,14 @@ RUN githash=$( git rev-parse --short HEAD 2>/dev/null ) \
     && gox -ldflags "-s -w -X github.com/pottava/trivy-restapi/app/lib.date=$(date +%Y-%m-%d) -X github.com/pottava/trivy-restapi/app/lib.version=${APP_VERSION} -X github.com/pottava/trivy-restapi/app/lib.commit=${githash}" \
         --osarch "linux/amd64" -output "/trivy-restapi"
 
-FROM alpine:3.9 AS trivy-bin
-RUN apk --no-cache add wget
-ENV TRIVY_VERSION=0.1.1 \
-    TRIVY_CHECKSUM=c3d4b1e6b1ff9a93934a9992a8deccad6771cb54a52a17e31d7b019ab8e373e4
-RUN repo="github.com/knqyf263/trivy" \
-    && base_url="https://${repo}/releases/download/v${TRIVY_VERSION}" \
-    && wget "${base_url}/trivy_${TRIVY_VERSION}_Linux-ARM64.tar.gz"
-RUN echo "${TRIVY_CHECKSUM}  trivy_${TRIVY_VERSION}_Linux-ARM64.tar.gz" | sha256sum -c -
-RUN tar xvf "trivy_${TRIVY_VERSION}_Linux-ARM64.tar.gz"
-RUN mv trivy /
+FROM golang:1.12.5-alpine3.9 AS trivy-bin
+RUN apk --no-cache add build-base git wget
+ENV APP_VERSION=v0.1.1
+RUN git clone --depth=1 -b ${APP_VERSION} https://github.com/knqyf263/trivy.git
+WORKDIR /go/trivy
+RUN go mod download
+RUN CGO_ENABLED=0 go build -a -ldflags "-s -w" cmd/trivy/main.go
+RUN mv /go/trivy/main /trivy
 
 FROM alpine:3.9
 RUN apk --no-cache add ca-certificates git \
