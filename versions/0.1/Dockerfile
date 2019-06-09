@@ -26,14 +26,14 @@ RUN githash=$( git rev-parse --short HEAD 2>/dev/null ) \
 
 FROM golang:1.12.5-alpine3.9 AS trivy-bin
 RUN apk --no-cache add build-base git wget
-ENV APP_VERSION=v0.1.1
+ENV APP_VERSION=v0.1.2
 RUN git clone --depth=1 -b ${APP_VERSION} https://github.com/knqyf263/trivy.git
 WORKDIR /go/trivy
 RUN go mod download
 RUN CGO_ENABLED=0 go build -a -ldflags "-s -w" cmd/trivy/main.go
 RUN mv /go/trivy/main /trivy
 
-FROM alpine:3.9
+FROM alpine:3.9.4
 RUN apk --no-cache add ca-certificates git \
     && rm -rf /lib/apk/db
 ENV CACHE_DIRECTORY=/root/.cache \
